@@ -1,4 +1,4 @@
-using Statistics,Plots,LsqFit,LinearAlgebra
+# using Statistics,Plots,LsqFit,LinearAlgebra
 
 #calculate impedance for a given frequency and timescale (not including resistance)
 function evaluate_Z(f_r,f_c)
@@ -166,10 +166,8 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,p)
     R0, R_drt... = p
     fitplt = scatter(Z_exp,label = "data")
     scatter!(fitplt,Z_fit,markersize = 3,label = "fit")
-    plot!(fitplt,yflip=true,aspect_ratio=:equal,legend = :topleft,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Fit")
 
     drtplt = plot(τ,R_drt,lw=3)
-    plot!(drtplt,ylabel = "R / Ω",xlabel = "τ / s",xaxis=:log,title = "DRT",legend = false,lw=3)
 
     #calcualate expanded Z 
     expandedfitplt=scatter(Z_expanded, color=palette(:default)[2])
@@ -177,8 +175,11 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,p)
     for rc in rcs
         plot!(expandedfitplt,rc,c=:purple,ls=:dash,lw=2)
     end
-    plot!(expandedfitplt,yflip=true,aspect_ratio=:equal,legend = false,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Expanded Fit")
 
+    #formatting the figures
+    plot!(fitplt,yflip=true,aspect_ratio=:equal,legend = :topleft,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Fit")
+    plot!(drtplt,ylabel = "R / Ω",xlabel = "τ / s",xaxis=:log,title = "DRT",legend = false,lw=3)
+    plot!(expandedfitplt,yflip=true,aspect_ratio=:equal,legend = false,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Expanded Fit")
     l = @layout [
         a b; c
     ]
