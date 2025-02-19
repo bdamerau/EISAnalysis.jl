@@ -1,5 +1,3 @@
-# using Statistics
-
 ω_default = collect(logrange(1e05,1e-03,7*Int(log10(1e05/1e-03))+1))
 
 abstract type CircuitElement end

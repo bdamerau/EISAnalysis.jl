@@ -1,5 +1,3 @@
-# using Statistics,Plots,LsqFit,LinearAlgebra
-
 #calculate impedance for a given frequency and timescale (not including resistance)
 function evaluate_Z(f_r,f_c)
     var = f_r/f_c 

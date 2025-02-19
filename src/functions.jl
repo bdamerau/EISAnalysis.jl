@@ -1,6 +1,3 @@
-using Statistics,Plots,LsqFit
-include("library.jl")
-
 #private functions
 function build_fit(model)
     function circuit_fit(omega ,p)
