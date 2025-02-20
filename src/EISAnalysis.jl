@@ -14,5 +14,6 @@ include("circuits.jl")
 include("drt.jl")
 include("functions.jl")
 include("library.jl")
+include("symbolic_functions.jl")
 
 end # module EISAnalysis
