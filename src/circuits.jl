@@ -26,13 +26,14 @@ set_params(a::CPE,p) = p[1]*q^p[2]
 set_params(a::Warburg,p) = (a.type=="short") ? p[1]*ws^p[2] : p[1]*wo^p[2]
 
 #this function is sloppy
-function set_params(a::Circuit,p,x) 
+function set_params(a::Circuit,p) 
     b = Circuit(a.ω,a.Z,Vector(undef,length(a.elements)),a.operators,a.order,a.subcircuits)
     for i in eachindex(a.elements)
         element = set_params(eval(a.elements[i]),p[i])
         b.elements[i] = get_symbol(element)
     end
-    return b#rebuild(b)
+    b = rebuild(b)
+    return b
 end
 
 #these functions are to generate symbols from Circuit elements

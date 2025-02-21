@@ -45,6 +45,7 @@ function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regulariz
 
     τ = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
     ω = 1 ./τ
+    dlnτ = log(τ[end]/τ[end-1])
 
     #cutting down data if it's too dense
     while length(ω_exp)>=length(ω)
@@ -90,18 +91,18 @@ function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regulariz
         end
     end
 
-
+    γ_fit = p[2:end]/dlnτ
     if showplot
         Z_matrices = build_Z_matrices(ω,ω)
         Z_expanded = drt_Z(Z_matrices[1],Z_matrices[2],p)
-        plt = plot_drt(Z_exp,Z_fit,Z_expanded,τ,p)
+        plt = plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ_fit)
         display(plt)
     end
 
     return Dict([
         "Z"=>Z_fit
         "R0"=>p[1]
-        "drt"=>p[2:end]
+        "drt"=>γ_fit
         "τ"=>τ
     ])
 end
@@ -160,15 +161,15 @@ function optimize_lambda(ω_exp,Z_exp,τ)
     return p_hat,minimum(errors)
 end
 
-function plot_drt(Z_exp,Z_fit,Z_expanded,τ,p)
-    R0, R_drt... = p
+function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
     fitplt = scatter(Z_exp,label = "data")
     scatter!(fitplt,Z_fit,markersize = 3,label = "fit")
 
-    drtplt = plot(τ,R_drt,lw=3)
+    drtplt = plot(τ,γ,lw=3)
 
     #calcualate expanded Z 
     expandedfitplt=scatter(Z_expanded, color=palette(:default)[2])
+    R_drt = γ*log(τ[end]/τ[end-1])
     rcs =  [ @. real(Z_expanded[i]) - 0.5R_drt[i]*(cos(0:π/30:π)+ im*sin(0:π/30:π)) for i in eachindex(τ)]
     for rc in rcs
         plot!(expandedfitplt,rc,c=:purple,ls=:dash,lw=2)
@@ -176,7 +177,7 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,p)
 
     #formatting the figures
     plot!(fitplt,yflip=true,aspect_ratio=:equal,legend = :topleft,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Fit")
-    plot!(drtplt,ylabel = "R / Ω",xlabel = "τ / s",xaxis=:log,title = "DRT",legend = false,lw=3)
+    plot!(drtplt,ylabel = "γ / Ω/s",xlabel = "τ / s",xaxis=:log,title = "DRT",legend = false,lw=3)
     plot!(expandedfitplt,yflip=true,aspect_ratio=:equal,legend = false,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Expanded Fit")
     l = @layout [
         a b; c

@@ -17,16 +17,16 @@ function circuit_fit(circuit, ω_data, Z_data)
     fit = curve_fit(fitting_function, ω_data, vcat(real(Z_data),imag(Z_data)), p0;
         lower = zeros(length(p0)))
     p_fit = unflatten(round.(fit.param,sigdigits = 5))
-    circuit_fit = set_params(circuit,p_fit) ~ ω_data
+    circuit_fit = set_params(circuit,p_fit)
+    println("Parameters")
+    println("__________")
+    print(circuit_fit.elements)
+    circuit_fit = circuit_fit ~ ω_data
     Z_fit = circuit_fit.Z
     plt = scatter(Z_data,label = "data")
     scatter!(plt,Z_fit,markersize=3,label = "fit")
     plot!(plt,aspect_ratio=:equal,yflip=true,ylabel = "-Im Z / Ω", xlabel = "Re Z / Ω",legend = :topleft)
     display(plt)
-    println("Parameters")
-    println("__________")
-    # [println(param) for param in fit.param]
-    print(circuit_fit.elements)
     return circuit_fit
 end
 
