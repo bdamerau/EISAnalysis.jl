@@ -22,7 +22,7 @@ function build_Z_matrices(ω_in,ω_out)
     return Z_real,Z_imag
 end
 
-#trying to add regularization
+#Using regularization method in a roundabout way
 function drt_Zregular(X_r,X_i,Y_r,Y_i,λ,p_reg)
     R0,R_drt... = p_reg
     x = R0 .+ (X_r+im*X_i)*R_drt
