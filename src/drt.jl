@@ -64,8 +64,8 @@ end
 #computing DRT
 function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regularization = false)
 
-    # τ = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
-    τ = tune_τ(ω_exp,Z_exp;ppd=ppd)
+    τ = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
+    # τ = tune_τ(ω_exp,Z_exp;ppd=ppd)
     ω = 1 ./τ
     n = length(ω) + 1
     dlnτ = log(τ[end]/τ[end-1])
@@ -233,10 +233,50 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
     fullplt = plot(fitplt,drtplt,expandedfitplt,layout = l)
     return fullplt
 end
+# function tune_τ(ω_exp,Z_exp;ppd=ppd,tol = 1e-03)
+#     # fit = compute_drt(ω_exp,Z_exp)
+#     τ_init = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
+#     # τ_init = logrange(1/maximum(ω_exp),1/minimum(ω_exp),floor(Int,log10(maximum(ω_exp)/minimum(ω_exp)))*ppd)#testing
+#     ω_init = 1 ./τ_init
+#     n = length(ω_init) + 1
+#     dlnτ = log(τ_init[end]/τ_init[end-1])
 
-function tune_τ(ω_exp,Z_exp;ppd=ppd,tol = 1e-03)
+#     #cutting down data if it's too dense
+#     while length(ω_exp)>=length(ω_init)
+#         ω_exp = ω_exp[1:2:end]
+#         Z_exp = Z_exp[1:2:end]
+#     end
+
+#     Z_real,Z_imag = build_Z_matrices(ω_exp,ω_init)
+
+#     function drt_fit(ω,p)
+#         Z_drt = drt_Z(Z_real,Z_imag,p)
+#         return vcat(real(Z_drt),imag(Z_drt))
+#     end 
+#     fit_funct = drt_fit
+#     p0 = abs.(rand(n))
+#     fit = curve_fit(fit_funct, ω_exp, vcat(real(Z_exp),imag(Z_exp)), p0;lower = zeros(n),autodiff=:forwarddiff)
+#     p = fit.param
+#     γ_init = p[2:end]/dlnτ
+#     γ_max = maximum(γ_init)
+#     peaks = findmaxima(γ_init)
+#     peaks = peakheights(peaks,min = tol*γ_max)
+#     τ_pks,γ_pks = peaks.indices,peaks.heights
+
+#     Z_im_min = ω-> γ_pks[1]*τ_pks[1]*10^ω/(1+τ_pks[1]^2*10^2ω) - tol*γ_pks[1]
+#     Z_im_max = ω-> γ_pks[end]*τ_pks[end]*10^ω/(1+τ_pks[end]^2*10^2ω) - tol*γ_pks[end]
+#     exp_min = find_zeros(Z_im_min,-10,10)[1]
+#     exp_max = find_zeros(Z_im_max,-10,10)[2]
+#     # τ_min,τ_max = 10^-max ,10^-min ##the 2π was random and I don't think correct
+#     τ_min,τ_max = max(10.0^-exp_max ,0.1/maximum(ω_exp)) , max(10.0/minimum(ω_exp),10.0^-exp_min)
+#     τ_tuned = logrange(τ_min,τ_max,floor(Int,log10(τ_max/τ_min))*ppd)
+#     return τ_tuned
+# end
+
+function tune_τ(ω_exp,Z_exp;ppd=ppd,tol = 1e-04)
     # fit = compute_drt(ω_exp,Z_exp)
     τ_init = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
+    # τ_init = logrange(1/maximum(ω_exp),1/minimum(ω_exp),floor(Int,log10(maximum(ω_exp)/minimum(ω_exp)))*ppd)#testing
     ω_init = 1 ./τ_init
     n = length(ω_init) + 1
     dlnτ = log(τ_init[end]/τ_init[end-1])
@@ -265,7 +305,7 @@ function tune_τ(ω_exp,Z_exp;ppd=ppd,tol = 1e-03)
     Z_im = ω-> sum([γ_pks[i]*τ_pks[i]*10^ω/(1+τ_pks[i]^2*10^2ω) 
                     for i in eachindex(γ_pks)]) - tol*γ_max
     min,max = find_zeros(Z_im,-10,10)
-    τ_min,τ_max = 10^-max,10^-min
+    τ_min,τ_max = 10^-max /2π,10^-min / 2π##the 2π was random and I don't think correct
     τ_tuned = logrange(τ_min,τ_max,floor(Int,log10(τ_max/τ_min))*ppd)
     return τ_tuned
 end

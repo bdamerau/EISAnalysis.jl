@@ -7,7 +7,6 @@ export compute_drt
 export r,c,q,l,wo,ws
 
 using Statistics,LinearAlgebra,LsqFit
-using Roots,Peaks
 using Plots
 
 include("circuitelements.jl")
