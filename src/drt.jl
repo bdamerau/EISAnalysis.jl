@@ -177,7 +177,7 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
 
     #formatting the figures
     plot!(fitplt,yflip=true,aspect_ratio=:equal,legend = :topleft,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Fit")
-    plot!(drtplt,ylabel = "γ / Ω/s",xlabel = "τ / s",xaxis=:log,title = "DRT",legend = false,lw=3)
+    plot!(drtplt,ylabel = "γ / Ω",xlabel = "τ / s",xaxis=:log,title = "DRT",legend = false,lw=3)
     plot!(expandedfitplt,yflip=true,aspect_ratio=:equal,legend = false,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Expanded Fit")
     l = @layout [
         a b; c
