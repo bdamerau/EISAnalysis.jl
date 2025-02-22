@@ -22,14 +22,35 @@ function build_Z_matrices(ω_in,ω_out)
     return Z_real,Z_imag
 end
 
-#Using regularization method in a roundabout way
-function drt_Zregular(X_r,X_i,Y_r,Y_i,λ,p_reg)
+"""
+    Since LsqFit minimizes Σ|Xᵢ-Yᵢ|², this function generates A such that
+                |Aᵢ-Yᵢ|² = |Xᵢ-Yᵢ|² + (λ/N)|p|²,    where N is the length of the vectors
+                      Aᵢ = Yᵢ+√(|Xᵢ-Yᵢ|²+(λ/N)|p|²)
+    Since the Real component carries the extra parameter (R0), two different functions
+    are defined for the real and imaginary components
+"""
+function drt_Zreal_regular(X_r,Y_r,λ,p_reg)
+    R0,R_drt... = p_reg
+    x = R0 .+ (X_r)*R_drt
+    N = length(x)
+    Γ = regularizer(p_reg,λ)
+    A_r = Y_r + sqrt.(abs2.(x-Y_r) .+ Γ/N)
+    return A_r
+end
+function drt_Zimag_regular(X_i,Y_i,λ,p_reg)
+    R_drt = p_reg[2:end]
+    x = X_i*R_drt
+    N = length(x)
+    Γ = regularizer(p_reg,λ)
+    A_i = Y_i + sqrt.(abs2.(x-Y_i) .+ Γ/N)
+    return A_i
+end
+function drt_Z_regular(X_r,X_i,Y_r,Y_i,λ,p_reg)
     R0,R_drt... = p_reg
     x = R0 .+ (X_r+im*X_i)*R_drt
     N = length(x)
     Γ = regularizer(p_reg,λ)
-    A = sqrt.(abs2.(x-Y_r-im*Y_i) .+ Γ/N)
-    A += Y_r + im*Y_i
+    A = Y_r + im*Y_i + sqrt.(abs2.(x-Y_r-im*Y_i) .+ Γ/N)
     return A
 end
 
@@ -43,8 +64,10 @@ end
 #computing DRT
 function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regularization = false)
 
-    τ = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
+    # τ = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
+    τ = tune_τ(ω_exp,Z_exp;ppd=ppd)
     ω = 1 ./τ
+    n = length(ω) + 1
     dlnτ = log(τ[end]/τ[end-1])
 
     #cutting down data if it's too dense
@@ -57,28 +80,27 @@ function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regulariz
 
     ####################
     if regularization
-        p,loss = optimize_lambda(ω_exp,Z_exp,τ)
-        Z_fit = drt_Z(Z_real,Z_imag,p)
-        
-        println("rtol = $loss")
-        if loss > rtol
-            println("WARNING: error is above specified tolerance")
-        end
+        λ = optimize_lambda(ω_exp,Z_exp,τ)
+        function drt_fit_regular(ω,p)
+            Z_drt = drt_Z_regular(Z_real,Z_imag,real(Z_exp),imag(Z_exp),λ,p)
+            return vcat(real(Z_drt),imag(Z_drt))
+        end 
+        fit_funct = drt_fit_regular
+        p0 = fill(0.05,n)
     else
         function drt_fit(ω,p)
             Z_drt = drt_Z(Z_real,Z_imag,p)
             return vcat(real(Z_drt),imag(Z_drt))
         end 
-        function drt_fitregular(ω,p)
-            Z_drt = drt_Zregular(Z_real,Z_imag,real(Z_exp),imag(Z_exp),λ,p)
-            return vcat(real(Z_drt),imag(Z_drt))
-        end 
+        fit_funct = drt_fit
+        p0 = abs.(rand(n))
+    end
 
 
         # Initialize the parameters
-        n = length(ω) + 1
-        p0 = abs.(rand(n))
-        fit_funct = drt_fit
+        
+        
+        # fit_funct = drt_fit       
 
         fit = curve_fit(fit_funct, ω_exp, vcat(real(Z_exp),imag(Z_exp)), p0;lower = zeros(n),autodiff=:forwarddiff)
         p = fit.param
@@ -89,7 +111,6 @@ function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regulariz
         if loss > rtol
             println("WARNING: error is above specified tolerance")
         end
-    end
 
     γ_fit = p[2:end]/dlnτ
     if showplot
@@ -111,18 +132,24 @@ end
 
 function optimize_lambda(ω_exp,Z_exp,τ)
 
-    lambda_values = vcat(0,logrange(1e-06,1e01,8))
+    # lambda_values = vcat(0,logrange(1e-06,1e01,8))
+    lambda_values = vcat(logrange(1e-06,1e01,8))
+    lambda_crossval = Vector(undef,length(lambda_values))
     ω = 1 ./τ
 
     Z_real,Z_imag = build_Z_matrices(ω_exp,ω)
 
-    function drt_fit(ω,p)
-        Z_drt = drt_Z(Z_real,Z_imag,p)
-        return vcat(real(Z_drt),imag(Z_drt))
+    # function drt_fit(ω,p)
+    #     Z_drt = drt_Z(Z_real,Z_imag,p)
+    #     return vcat(real(Z_drt),imag(Z_drt))
+    # end 
+    function drt_fit_real(ω,p;λ_reg)
+        Z_drt_real = drt_Zreal_regular(Z_real,real(Z_exp),λ_reg,p)
+        return Z_drt_real
     end 
-    function drt_fitregular(ω,p;λ_reg)
-        Z_drt = drt_Zregular(Z_real,Z_imag,real(Z_exp),imag(Z_exp),λ_reg,p)
-        return vcat(real(Z_drt),imag(Z_drt))
+    function drt_fit_imag(ω,p;λ_reg)
+        Z_drt_imag = drt_Zimag_regular(Z_imag,imag(Z_exp),λ_reg,p)
+        return Z_drt_imag
     end 
 
 
@@ -131,34 +158,55 @@ function optimize_lambda(ω_exp,Z_exp,τ)
     
     #finding λ that minimizes error
     errors,ps = [],[]
-    for λ in lambda_values
-        if λ==0
-            p0 = abs.(rand(n))
-            fit_funct = drt_fit
-        else
-            p0 = fill(0.05,n)
-            fit_funct(ω,p) = drt_fitregular(ω,p;λ_reg = λ)
-        end
+    for i in eachindex(lambda_values)
+        # if λ==0 #potentially delete
+        #     p0 = abs.(rand(n))
+        #     fit_funct = drt_fit
+        # else
+        λ = lambda_values[i]
+        p0 = fill(0.05,n)
+        #fit_funct = drt_fitregular(ω,p;λ_reg = λ)
+        # end
+        fit_funct_real(ω,p) = drt_fit_real(ω,p;λ_reg = λ)
+        fit_funct_imag(ω,p) = drt_fit_imag(ω,p;λ_reg = λ)
 
-        fit = curve_fit(fit_funct, ω_exp, vcat(real(Z_exp),imag(Z_exp)), p0;lower = zeros(n),autodiff=:forwarddiff)
+        fit_real = curve_fit(fit_funct_real, ω_exp, real(Z_exp), p0;lower = zeros(n),autodiff=:forwarddiff)
+        fit_imag = curve_fit(fit_funct_imag, ω_exp, imag(Z_exp), p0;lower = zeros(n),autodiff=:forwarddiff)
 
-        p = fit.param
-        push!(ps,p)
-        Z_fit = drt_Z(Z_real,Z_imag,p)
-        loss = mean(abs2.((Z_fit.-Z_exp)./Z_exp))
-        push!(errors,loss)
+        p_real = fit_real.param
+        p_imag = fit_imag.param
+
+        # lambda_discrepencies[i] = norm(p_real-p_imag)
+        crossval_real = norm(p_imag[1] .+ Z_real*p_imag[2:end] - real(Z_exp))^2
+        crossval_imag = norm(Z_imag*p_real[2:end] - imag(Z_exp))^2
+        lambda_crossval[i] = crossval_real+crossval_imag
+        # p = fit.param
+        # push!(ps,p)
+        # Z_fit = drt_Z(Z_real,Z_imag,p)
+        # loss = mean(abs2.((Z_fit.-Z_exp)./Z_exp))
+        # push!(errors,loss)
     end
 
-    λ_hat = lambda_values[argmin(errors)[1]]
-    p_hat = ps[argmin(errors)[1]]
-    if λ_hat ==0
-        println("Regularizaiton Not Used")
-    else
-        println("Regularization")
-        println("--------------")
-        println("λ = $λ_hat")
-    end
-    return p_hat,minimum(errors)
+
+    i_min = argmin(lambda_crossval)[1]
+    # println(lambda_crossval)#testing
+    println("Regularization")
+    println("--------------")
+    println("λ = $(lambda_values[i_min])")
+
+    return lambda_values[i_min]
+    # return lambda_values[2]##testing
+
+    # λ_hat = lambda_values[argmin(errors)[1]]
+    # p_hat = ps[argmin(errors)[1]]
+    # if λ_hat ==0
+    #     println("Regularizaiton Not Used")
+    # else
+    #     println("Regularization")
+    #     println("--------------")
+    #     println("λ = $λ_hat")
+    # end
+    # return p_hat,minimum(errors)
 end
 
 function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
@@ -184,4 +232,40 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
     ]
     fullplt = plot(fitplt,drtplt,expandedfitplt,layout = l)
     return fullplt
+end
+
+function tune_τ(ω_exp,Z_exp;ppd=ppd,tol = 1e-03)
+    # fit = compute_drt(ω_exp,Z_exp)
+    τ_init = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
+    ω_init = 1 ./τ_init
+    n = length(ω_init) + 1
+    dlnτ = log(τ_init[end]/τ_init[end-1])
+
+    #cutting down data if it's too dense
+    while length(ω_exp)>=length(ω_init)
+        ω_exp = ω_exp[1:2:end]
+        Z_exp = Z_exp[1:2:end]
+    end
+
+    Z_real,Z_imag = build_Z_matrices(ω_exp,ω_init)
+
+    function drt_fit(ω,p)
+        Z_drt = drt_Z(Z_real,Z_imag,p)
+        return vcat(real(Z_drt),imag(Z_drt))
+    end 
+    fit_funct = drt_fit
+    p0 = abs.(rand(n))
+    fit = curve_fit(fit_funct, ω_exp, vcat(real(Z_exp),imag(Z_exp)), p0;lower = zeros(n),autodiff=:forwarddiff)
+    p = fit.param
+    γ_init = p[2:end]/dlnτ
+    γ_max = maximum(γ_init)
+    peaks = findmaxima(γ_init)
+    peaks = peakheights(peaks,min = tol*γ_max)
+    τ_pks,γ_pks = peaks.indices,peaks.heights
+    Z_im = ω-> sum([γ_pks[i]*τ_pks[i]*10^ω/(1+τ_pks[i]^2*10^2ω) 
+                    for i in eachindex(γ_pks)]) - tol*γ_max
+    min,max = find_zeros(Z_im,-10,10)
+    τ_min,τ_max = 10^-max,10^-min
+    τ_tuned = logrange(τ_min,τ_max,floor(Int,log10(τ_max/τ_min))*ppd)
+    return τ_tuned
 end
