@@ -1,4 +1,3 @@
-function plot_Nyquist(a::Circuit...;label::Vector{String} = fill("",length(a)))
 """
     Description
     -----------
@@ -9,6 +8,7 @@ function plot_Nyquist(a::Circuit...;label::Vector{String} = fill("",length(a)))
     a::Circuit  - The circuits to add to the Nyquist plot
     label       - kwarg for plot
 """
+function plot_Nyquist(a::Circuit...;label::Vector{String} = fill("",length(a)))
     if length(label)!=length(a)
         println("Warning: label must be the same length as data arguments")
         label = fill("",length(a))
