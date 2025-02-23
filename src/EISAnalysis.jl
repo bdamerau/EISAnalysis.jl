@@ -1,7 +1,7 @@
 module EISAnalysis
 
 # export CircuitElement,Resistor,Capacitor,CPE,Inductor,Warburg,Circuit
-export plot_Nyquist,plot_Nyquist!
+export plot_Nyquist,plot_Nyquist!,print_circuit
 export get_params,circuit_fit
 export compute_drt
 export r,c,q,l,wo,ws

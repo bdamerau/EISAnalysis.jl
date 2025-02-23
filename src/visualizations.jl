@@ -1,4 +1,4 @@
-function plot_Nyquist(a::Circuit...)
+function plot_Nyquist(a::Circuit...;label::Vector{String} = fill("",length(a)))
 """
     Description
     -----------
@@ -7,15 +7,26 @@ function plot_Nyquist(a::Circuit...)
     Parameters
     -----------
     a::Circuit  - The circuits to add to the Nyquist plot
+    label       - kwarg for plot
 """
+    if length(label)!=length(a)
+        println("Warning: label must be the same length as data arguments")
+        label = fill("",length(a))
+    end
+
     plt = plot()
-    for circuit in a
-        scatter!(plt,circuit.Z)
+    for i in eachindex(a)
+        scatter!(plt,a[i].Z;label = label[i])
     end
     plot!(plt,aspect_ratio=:equal,yflip=true,ylabel = "-Im Z / Ω", xlabel = "Re Z / Ω",legend = :topleft)
     return plt
 end
-function plot_Nyquist!(plt,a::Circuit...)
+function plot_Nyquist(a::Circuit;label::String = "")
+    plt = scatter(a.Z;label = label)
+    plot!(plt,aspect_ratio=:equal,yflip=true,ylabel = "-Im Z / Ω", xlabel = "Re Z / Ω",legend = :topleft)
+    return plt
+end
+function plot_Nyquist!(plt,a::Circuit...;label::Vector{String} = fill("",length(a)))
 """
     Description
     -----------
@@ -25,14 +36,24 @@ function plot_Nyquist!(plt,a::Circuit...)
     -----------
     plt::Plots.plot - The input Nyquist plot to manipulate
     a::Circuit      - The circuits to add to the Nyquist plot
+    label           - kwarg for plot
 """
-    for circuit in a
-        scatter!(plt,circuit.Z)
+    if length(label)!=length(a)
+        println("Warning: label must be the same length as data arguments")
+        label = fill("",length(a))
+    end
+    for i in eachindex(a)
+        scatter!(plt,a[i].Z,label = label[i])
     end
     plot!(plt,aspect_ratio=:equal,yflip=true,ylabel = "-Im Z / Ω", xlabel = "Re Z / Ω",legend = :topleft)
-    display(plt)
     return nothing
 end
+function plot_Nyquist!(plt,a::Circuit;label::String = "")
+    scatter!(plt,a.Z,label = label)
+    plot!(plt,aspect_ratio=:equal,yflip=true,ylabel = "-Im Z / Ω", xlabel = "Re Z / Ω",legend = :topleft)
+    return nothing
+end
+
 
 function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
 """
