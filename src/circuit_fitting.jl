@@ -1,6 +1,18 @@
 
 #shaping the parameters to map onto circuit elements 
 function unflatten_parameters(pflat,tuples)
+    """
+    Description
+    -----------
+    LsqFit.curve_fit requires a parameter list that is flat,
+    but set_params may require a parameter list with tuples.
+    This function unflattens parameter list to feed to set_params
+
+    Parameters
+    -----------
+    pflat   - Flat parameter list
+    tuples  - List of tuple indices for unflattened parameter list
+    """
     #initialize
     newp = [pflat[i] for i in 1:tuples[1]-1]
     for i in eachindex(tuples[1:end-1])
@@ -15,7 +27,19 @@ function unflatten_parameters(pflat,tuples)
 end
 
 function circuit_fit(circuit, ω_data,Z_data)
+    """
+    Description
+    -----------
+    Main function for fitting a Circuit to EIS data.
+    The initial guess is passed through the circuit definition.
+        e.g. circuit = 0.5r/1e-05c
 
+    Parameters
+    -----------
+    circuit - Circuit for fitting
+    ω_data  - EIS frequencies
+    Z_data  - EIS impedance
+    """
     #getting initial parameters and the parameter shape
     tuples = findall(x->typeof(x)!=Float64,get_params(circuit))
     tuples += collect(0:length(tuples)-1)

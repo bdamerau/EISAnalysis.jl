@@ -1,4 +1,10 @@
 function optimize_lambda(ω_exp,Z_exp,τ)
+"""
+    Description
+    -----------
+    Parameters
+    -----------
+"""
 
     # lambda_values = vcat(0,logrange(1e-06,1e01,8))
     lambda_values = vcat(logrange(1e-06,1e01,8))
@@ -48,6 +54,12 @@ function optimize_lambda(ω_exp,Z_exp,τ)
 end
 
 function tune_τ(ω_exp,Z_exp;ppd=ppd,tol = 1e-03)
+"""
+    Description
+    -----------
+    Parameters
+    -----------
+"""
     # fit = compute_drt(ω_exp,Z_exp)
     τ_init = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
     ω_init = 1 ./τ_init

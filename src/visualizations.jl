@@ -1,4 +1,10 @@
 function plot_Nyquist(a::Circuit...)
+"""
+    Description
+    -----------
+    Parameters
+    -----------
+"""
     plt = plot()
     for circuit in a
         scatter!(plt,circuit.Z)
@@ -7,6 +13,12 @@ function plot_Nyquist(a::Circuit...)
     return plt
 end
 function plot_Nyquist!(plt,a::Circuit...)
+"""
+    Description
+    -----------
+    Parameters
+    -----------
+"""
     for circuit in a
         scatter!(plt,circuit.Z)
     end
@@ -16,6 +28,12 @@ function plot_Nyquist!(plt,a::Circuit...)
 end
 
 function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
+"""
+    Description
+    -----------
+    Parameters
+    -----------
+"""
     fitplt = scatter(Z_exp,label = "data")
     scatter!(fitplt,Z_fit,markersize = 3,label = "fit")
 
@@ -42,6 +60,15 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
 end
 
 function print_circuit(circuit)
+"""
+    Description
+    -----------
+    Prints the elements of a circuit along with its parameters
+
+    Parameters
+    -----------
+    circuit::Circuit    - The circuit being printed
+"""
     for element in circuit.elements
         println(element)
     end
