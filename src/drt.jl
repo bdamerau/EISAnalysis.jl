@@ -86,7 +86,7 @@ function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regulariz
             return vcat(real(Z_drt),imag(Z_drt))
         end 
         fit_funct = drt_fit_regular
-        p0 = fill(0.05,n)
+        p0 = fill(0.5,n)
     else
         function drt_fit(ω,p)
             Z_drt = drt_Z(Z_real,Z_imag,p)
