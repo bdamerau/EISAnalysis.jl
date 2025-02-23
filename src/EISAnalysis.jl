@@ -7,12 +7,14 @@ export compute_drt
 export r,c,q,l,wo,ws
 
 using Statistics,LinearAlgebra,LsqFit
+using Roots,Peaks
 using Plots
 
 include("circuitelements.jl")
+include("drt_hyperparameters.jl")
 include("circuits.jl")
 include("operators.jl")
 include("visualizations.jl")
-include("fitting_functions.jl")
+include("circuit_fitting.jl")
 include("drt.jl")
 end # module EISAnalysis

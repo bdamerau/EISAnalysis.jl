@@ -14,3 +14,29 @@ function plot_Nyquist!(plt,a::Circuit...)
     display(plt)
     return nothing
 end
+
+function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
+    fitplt = scatter(Z_exp,label = "data")
+    scatter!(fitplt,Z_fit,markersize = 3,label = "fit")
+
+    γ_pks = findmaxima(γ) |> peakproms!(min = maximum(γ)/20) |> peakwidths!()
+    drtplt = plotpeaks(τ, γ; peaks=γ_pks.indices, prominences=true, widths=true,lw=2,ms = 2.5)
+
+    #calcualate expanded Z 
+    expandedfitplt=scatter(Z_expanded, color=palette(:default)[2])
+    R_drt = γ*log(τ[end]/τ[end-1])
+    rcs =  [ @. real(Z_expanded[i]) - 0.5R_drt[i]*(cos(0:π/30:π)+ im*sin(0:π/30:π)) for i in eachindex(τ)]
+    for rc in rcs
+        plot!(expandedfitplt,rc,c=:purple,ls=:dash,lw=2)
+    end
+
+    #formatting the figures
+    plot!(fitplt,yflip=true,aspect_ratio=:equal,legend = :topleft,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Fit")
+    plot!(drtplt,ylabel = "γ / Ω",xlabel = "τ / s",xaxis=:log,title = "DRT",legend = false,lw=3)
+    plot!(expandedfitplt,yflip=true,aspect_ratio=:equal,legend = false,ylabel = "-Im(Z) / Ω",xlabel = "Re(Z) / Ω",title = "Expanded Fit")
+    l = @layout [
+        a b; c
+    ]
+    fullplt = plot(fitplt,drtplt,expandedfitplt,layout = l)
+    return fullplt
+end
