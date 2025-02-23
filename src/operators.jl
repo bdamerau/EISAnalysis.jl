@@ -28,8 +28,8 @@ Function ~
     -----------
     Maps the frequencies over which impedance is calculated to the desired frequency.
     Operates over Circuits and CircuitElements.
-
 """
+
 import Base.(-)
 function -(a::CircuitElement,b::Circuit)
     return Circuit(a.ω, a.Z+b.Z, vcat(get_symbol(a),b.elements),vcat(-,b.operators),
