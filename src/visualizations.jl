@@ -40,3 +40,10 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
     fullplt = plot(fitplt,drtplt,expandedfitplt,layout = l)
     return fullplt
 end
+
+function print_circuit(circuit)
+    for element in circuit.elements
+        println(element)
+    end
+    return nothing
+end
