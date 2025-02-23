@@ -38,7 +38,7 @@ function circuit_fit(circuit, ω_data,Z_data)
     circuit_fit = set_params(circuit,p_fit)
     println("Parameters")
     println("__________")
-    print_circuit(circuit)
+    print_circuit(circuit_fit)
     circuit_fit = circuit_fit ~ ω_data
     Z_fit = circuit_fit.Z
     plt = scatter(Z_data,label = "data")
