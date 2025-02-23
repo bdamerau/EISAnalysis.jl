@@ -1,4 +1,35 @@
-#operator functions
+"""
+Overloaded Operators: -, /, *, ^, and ~
+
+Function /
+    Description
+    -----------
+    Holds the inputs in parallel and generates a Circuit.
+    Operates over Circuits and CircuitElements
+
+Function -
+    Description
+    -----------
+    Holds the inputs in series and generates a Circuit.
+    Operates over Circuits and CircuitElements
+
+Function *
+    Description
+    -----------
+    Mutates the impedance parameter of CircuitElements
+
+Function ^
+    Description
+    -----------
+    Mutates the exponent parameter of CPE's and Warburgs
+
+Function ~
+    Description
+    -----------
+    Maps the frequencies over which impedance is calculated to the desired frequency.
+    Operates over Circuits and CircuitElements.
+
+"""
 import Base.(-)
 function -(a::CircuitElement,b::Circuit)
     return Circuit(a.ω, a.Z+b.Z, vcat(get_symbol(a),b.elements),vcat(-,b.operators),
@@ -35,10 +66,6 @@ end
 
 
 import Base.*
-function *(a::Real, circuit::Circuit)
-    return Circuit(circuit.ω,a*circuit.Z,circuit.elements,
-        circuit.operators,circuit.order,circuit.subcircuits) ##this should be either adjusted or deleted
-end
 function *(a::Real, r::Resistor)
     return Resistor(r.ω,a*r.R)
 end

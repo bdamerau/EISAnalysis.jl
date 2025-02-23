@@ -2,8 +2,11 @@ function plot_Nyquist(a::Circuit...)
 """
     Description
     -----------
+    Creates a Nyquist plot
+
     Parameters
     -----------
+    a::Circuit  - The circuits to add to the Nyquist plot
 """
     plt = plot()
     for circuit in a
@@ -16,8 +19,12 @@ function plot_Nyquist!(plt,a::Circuit...)
 """
     Description
     -----------
+    Adds circuits to pre-existing Nyquist plot
+
     Parameters
     -----------
+    plt::Plots.plot - The input Nyquist plot to manipulate
+    a::Circuit      - The circuits to add to the Nyquist plot
 """
     for circuit in a
         scatter!(plt,circuit.Z)
@@ -31,8 +38,19 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
 """
     Description
     -----------
+    Creats a combined plot of 
+        1. A fit of the DRT results to input EIS data
+        2. The DRT plotted with peaks and peakwidths
+        3. An expanded Nyquist plot of DRT data to aid in DRT interpretation
+
     Parameters
     -----------
+    Z_exp::Complex      - The input impedance data being fitted
+    Z_fit::Complex      - The DRT fit result, matching the frequencies of Z_exp
+    Z_expanded::Complex - The expanded DRT fit using the full range of τ
+    τ::Vector           - The range of timescales over which the DRT is calculated
+    γ::Vector           - DRT Results
+
 """
     fitplt = scatter(Z_exp,label = "data")
     scatter!(fitplt,Z_fit,markersize = 3,label = "fit")

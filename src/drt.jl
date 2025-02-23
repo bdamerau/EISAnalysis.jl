@@ -156,7 +156,7 @@ function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regulariz
     Z_exp           - Input EIS Impedance
     ppd             - Points-per-decade in output τ range for computing DRT
     showplot        - Whether or not to plot DRT results
-    rtlol           - The desired relative tolerance. Function outputs a warning if the fit result is above this
+    rtol           - The desired relative tolerance. Function outputs a warning if the fit result is above this
     regularization  - Whether or no to employ the regularization method
 """
 
