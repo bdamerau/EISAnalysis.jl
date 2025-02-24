@@ -1,5 +1,8 @@
 EISAnalysis.jl
 ==============
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://bdamerau.github.io/EISAnalysis.jl/stable)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://bdamerau.github.io/EISAnalysis.jl/dev)
+
 
 This is a small package for working with Electrochemical Impedance Spectroscopy (EIS) data 
 from electrochemical systems. It is currently designed to do the following:
