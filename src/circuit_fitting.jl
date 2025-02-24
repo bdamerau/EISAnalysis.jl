@@ -1,6 +1,7 @@
 
 """
     unflatten_parameters(pflat,tuples)
+
 Shapes parameter list to feed into Circuit. See `circuit_fit`
 
 LsqFit.curve_fit requires a parameter list that is flat,
@@ -36,7 +37,7 @@ The initial guess is passed implicitly through the circuit definition. E.g.
 
 # Attributes
 - `circuit`: Circuit for fitting
--`ω_data`: EIS frequencies
+- `ω_data`: EIS frequencies
 - `Z_data`: EIS impedance
 """
 function circuit_fit(circuit, ω_data,Z_data)

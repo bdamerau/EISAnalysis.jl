@@ -155,7 +155,7 @@ Main function for computing the DRT from input EIS data.
 - `regularization=false`: Whether or no to employ the regularization method
 
 # Examples
-```julia
+```jldoctest
 julia> ω_exp, Z_exp = (r/q).ω, (r/q).Z; #replace this with actual data;
 julia> fit = compute_drt(ω_exp,Z_exp;showplot = false,regularization = true)
 Regularization
