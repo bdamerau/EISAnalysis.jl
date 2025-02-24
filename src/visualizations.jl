@@ -8,7 +8,7 @@ Creates a Nyquist plot
 - `label`: kwarg label for plot
 
 # Examples
-```jldoctest
+```julia
 julia> using EISAnalysis
 julia> eval(initialize());
 julia> circuit1 = r-r/c;
@@ -46,7 +46,7 @@ Adds circuits to pre-existing Nyquist plot
 - `label`: kwarg label for plot
 
 # Examples
-```jldoctest
+```julia
 julia> using EISAnalysis
 julia> eval(initialize());
 julia> circuit1 = r-r/c;
@@ -123,7 +123,7 @@ Prints the elements of a circuit along with its parameters
 - `circuit::Circuit`: The circuit being printed
 
 # Examples
-```jldoctest
+```julia
 julia> using EISAnalysis
 julia> eval(initialize());
 julia> randles_circuit = 0.23r-(r-0.025wo^80)/0.2q;
