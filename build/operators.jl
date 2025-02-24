@@ -17,8 +17,6 @@ Operates over Circuits and CircuitElements.
 
 #Examples
 ```jldoctest
-julia> using EISAnalysis
-julia> eval(initialize());
 julia> circuit1 = r-c;
 julia> circuit2 = circuit1-c;
 julia> circuit2.Z == (r-c-c).Z == (r-0.5c).Z
