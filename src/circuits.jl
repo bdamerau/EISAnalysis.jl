@@ -1,10 +1,23 @@
-# const ws,wo = Warburg("short"), Warburg("open")
-# const r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()
-
 """
     initialize()
 
-Generates all the circuit elements for ease of use in building circuits
+Generates all the circuit elements for ease of use in building circuits.
+
+It adds the following variables to your environment
+    r = Resistor()
+    c = Capacitor()
+    l = Inductor()
+    q = CPE()
+    wo = Warburg("open")
+    ws = Warburg("short")
+From here you can quickly build circuits and adjust the parameters directly 
+using the overloaded * and ^ operators as desired
+
+# Examples
+```julia
+julia> eval(initialize());
+julia> silly_circuit = 0.25r/2.5l-(r-9wo)/q^0.64-(16r-ws^144)/12.1c;
+```
 """
 function initialize()
     return quote
@@ -44,6 +57,7 @@ Gets the parameters for elements in a circuit.
 
 # Examples
 ```julia
+julia> eval(initialize());
 julia> randles_circuit = 0.23r-(r-0.025wo^80)/0.2q;
 julia> p = get_params(randles_circuit)
 4-element Vector{Any}:
@@ -73,6 +87,7 @@ Currently a bit sloppy.Used in `circuit_fit`
 
 # Examples
 ```julia
+julia> eval(initialize());
 julia> circuit = r-r/q;
 julia> p = [0.5,2,(0.5,0.9)]
 3-element Vector{Any}:

@@ -2,73 +2,69 @@
 
 abstract type CircuitElement end
 
-mutable struct Resistor <: CircuitElement
-    """
-    Description
-    -----------
-    Struct for storing resistor information.
+"""
+    Resistor(R,ω,Z)
 
-    Elements
-    -----------
-    R   - Resistance
-    ω   - EIS frequencies
-    Z   - EIS impedance
-    """
+Struct for storing resistor information.
+
+# Attributes
+- `R`: Resistance
+- `ω`: EIS frequencies
+- `Z`: EIS impedance
+"""
+mutable struct Resistor <: CircuitElement
     R       ::Float64
     ω       ::Vector{Real}
     Z       ::Vector{ComplexF64}
 end
 Resistor(ω=ω_default,R=1.0) = Resistor(R, ω, R*ones(length(ω)))
 
-mutable struct Capacitor <: CircuitElement
-    """
-    Description
-    -----------
-    Struct for storing capacitor information.
+"""
+    Capacitor(C,ω,Z)
 
-    Elements
-    -----------
-    C   - Capacitance
-    ω   - EIS frequencies
-    Z   - EIS impedance
-    """
+Struct for storing resistor information.
+
+# Attributes
+- `C`: Capacitance 
+- `ω`: EIS frequencies
+- `Z`: EIS impedance
+"""
+mutable struct Capacitor <: CircuitElement
     C       ::Float64
     ω       ::Vector{Real}
     Z       ::Vector{ComplexF64}
 end
 Capacitor(ω=ω_default,C=1.0) = Capacitor(C, ω, -im./(C*ω))
 
-mutable struct Inductor <: CircuitElement
-    """
-    Description
-    -----------
-    Struct for storing inductor information.
+"""
+    Inductor(L,ω,Z)
 
-    Elements
-    -----------
-    L   - Inductance
-    ω   - EIS frequencies
-    Z   - EIS impedance
-    """
+Struct for storing inductor information.
+
+# Attributes
+- `L`: Inductance
+- `ω`: EIS frequencies
+- `Z`: EIS impedance
+"""
+mutable struct Inductor <: CircuitElement
     L       ::Float64
     ω       ::Vector{Real}
     Z       ::Vector{ComplexF64}
 end
 Inductor(ω=ω_default,L=1.0) = Inductor(L,ω,im*L*ω)
 
-mutable struct CPE <: CircuitElement
-    """
-    Description
-    -----------
-    Struct for storing CPE information.
+"""
+    CPE(Q,n,ω,Z)
 
-    Elements
-    -----------
-    Q   - CP capacitance
-    n   - CP phase angle
-    ω   - EIS frequencies
-    Z   - EIS impedance
-    """
+Struct for storing CPE information.
+
+#Attributes
+- `Q`: CP capacitance
+- `n`: CP phase angle
+- `ω`: EIS frequencies
+- `Z`: EIS impedance
+"""
+mutable struct CPE <: CircuitElement
     Q       ::Float64
     n       ::Float64
     ω       ::Vector{Real}
@@ -76,21 +72,21 @@ mutable struct CPE <: CircuitElement
 end
 CPE(ω=ω_default,Q=1.0,n=0.8) = CPE(Q,n,ω,(im*Q*ω).^(-n))
 
-mutable struct Warburg <: CircuitElement
-    """
-    Description
-    -----------
-    Struct for storing Warburg information.
-    Can be either short or open, depending on type.
+"""
+    Warburg(type,A,B,ω,Z)
 
-    Elements
-    -----------
-    type    - Warburg type ("short" or "open")
-    A       - Warburg impedance parameter
-    B       - Warburg exponential parameter
-    ω       - EIS frequencies
-    Z       - EIS impedance
-    """
+Struct for storing Warburg information.
+
+Can be either short or open, depending on type.
+
+#Attributes
+- `type`: Warburg type ("short" or "open")
+- `A`: Warburg impedance parameter
+- `B`: Warburg exponential parameter
+- `ω`: EIS frequencies
+- `Z`: EIS impedance
+"""
+mutable struct Warburg <: CircuitElement
     type    ::String
     A       ::Float64
     B       ::Float64

@@ -1,18 +1,17 @@
 
-#shaping the parameters to map onto circuit elements 
-function unflatten_parameters(pflat,tuples)
-    """
-    Description
-    -----------
-    LsqFit.curve_fit requires a parameter list that is flat,
-    but set_params may require a parameter list with tuples.
-    This function unflattens parameter list to feed to set_params
+"""
+    unflatten_parameters(pflat,tuples)
+Shapes parameter list to feed into Circuit. See `circuit_fit`
 
-    Parameters
-    -----------
-    pflat   - Flat parameter list
-    tuples  - List of tuple indices for unflattened parameter list
-    """
+LsqFit.curve_fit requires a parameter list that is flat,
+but set_params may require a parameter list with tuples.
+This function unflattens parameter list to feed to set_params.
+
+# Attributes
+- `pflat`: Flat parameter list
+- `tuples`: List of tuple indices for unflattened parameter list
+"""
+function unflatten_parameters(pflat,tuples)
     #initialize
     newp = [pflat[i] for i in 1:tuples[1]-1]
     for i in eachindex(tuples[1:end-1])
@@ -26,20 +25,21 @@ function unflatten_parameters(pflat,tuples)
     return vcat(newp,[pflat[j] for j in tuples[end]+2:length(pflat)])
 end
 
-function circuit_fit(circuit, ω_data,Z_data)
-    """
-    Description
-    -----------
-    Main function for fitting a Circuit to EIS data.
-    The initial guess is passed through the circuit definition.
-        e.g. circuit = 0.5r/1e-05c
+"""
+    circuit_fit(circuit, ω_data,Z_data)
 
-    Parameters
-    -----------
-    circuit - Circuit for fitting
-    ω_data  - EIS frequencies
-    Z_data  - EIS impedance
-    """
+Main function for fitting a Circuit to EIS data.
+
+The initial guess is passed implicitly through the circuit definition. E.g.
+    randles_circuit = 0.23r-(r-0.025wo^80)/0.2c
+    # p0 = [0.23,1.0,(0.025,80),0.2]
+
+# Attributes
+- `circuit`: Circuit for fitting
+-`ω_data`: EIS frequencies
+- `Z_data`: EIS impedance
+"""
+function circuit_fit(circuit, ω_data,Z_data)
     #getting initial parameters and the parameter shape
     tuples = findall(x->typeof(x)!=Float64,get_params(circuit))
     tuples += collect(0:length(tuples)-1)

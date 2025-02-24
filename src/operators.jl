@@ -17,6 +17,7 @@ Operates over Circuits and CircuitElements.
 
 #Examples
 ```julia
+julia> eval(initialize());
 julia> circuit1 = r-c;
 julia> circuit2 = circuit1-c;
 julia> circuit2.Z == (r-c-c).Z == (r-0.5c).Z
@@ -52,6 +53,7 @@ Operates over Circuits and CircuitElements.
 
 #Examples
 ```julia
+julia> eval(initialize());
 julia> circuit1 = r/c;
 julia> circuit1.elements
 2-element Vector{Expr}:
@@ -90,6 +92,7 @@ Mutates the impedance parameter of CircuitElements.
 
 #Examples
 ```julia
+julia> eval(initialize());
 julia> r.R
 1.0
 julia> twor = 2r;
@@ -124,6 +127,7 @@ Mutates the exponent parameter of CPE's and Warburgs.
 
 #Examples
 ```julia
+julia> eval(initialize());
 julia> circuit = q-wo; print_circuit(circuit)
 1.0 * q ^ 0.8
 1.0 * wo ^ 1.0
@@ -156,6 +160,7 @@ julia> ω = [0.1,1,10]
   0.1
   1.0
  10.0
+julia> eval(initialize());
 julia> circuit = r/c ~ω; println(circuit.ω,circuit.Z)
 Real[0.1, 1.0, 10.0]ComplexF64[0.9900990099009901 - 0.09900990099009901im, 0.5 - 0.5im, 0.009900990099009903 - 0.09900990099009901im]
 ```
