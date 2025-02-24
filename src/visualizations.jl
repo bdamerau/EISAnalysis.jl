@@ -9,6 +9,8 @@ Creates a Nyquist plot
 
 # Examples
 ```jldoctest
+julia> using EISAnalysis
+julia> eval(initialize());
 julia> circuit1 = r-r/c;
 julia> circuit2 = r-r/q;
 julia> plot_Nyquist(circuit1,circuit2;label= ["R-C Circuit","R-CPE Circuit"]);
@@ -45,6 +47,8 @@ Adds circuits to pre-existing Nyquist plot
 
 # Examples
 ```jldoctest
+julia> using EISAnalysis
+julia> eval(initialize());
 julia> circuit1 = r-r/c;
 julia> circuit2 = r-r/q;
 julia> plot_Nyquist(circuit1,circuit2;label= ["R-C Circuit","R-CPE Circuit"]);
@@ -120,6 +124,8 @@ Prints the elements of a circuit along with its parameters
 
 # Examples
 ```jldoctest
+julia> using EISAnalysis
+julia> eval(initialize());
 julia> randles_circuit = 0.23r-(r-0.025wo^80)/0.2q;
 julia> print_circuit(randles_circuit)
 0.23r
