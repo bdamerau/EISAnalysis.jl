@@ -7,12 +7,10 @@
 Generates all the circuit elements for ease of use in building circuits
 """
 function initialize()
-    eval(quote
-    ws,wo = Warburg("short"), Warburg("open")
-    r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()  
-    end)
-    print("Circuit elements r, c, q, l, wo, and ws generated")
-    return nothing
+    return quote
+    ws,wo = EISAnalysis.Warburg("short"), EISAnalysis.Warburg("open")
+    r,c,q,l = EISAnalysis.Resistor(),EISAnalysis.Capacitor(),EISAnalysis.CPE(),EISAnalysis.Inductor()  
+    end
 end
 """
     Circuit
