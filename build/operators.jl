@@ -17,6 +17,7 @@ Operates over Circuits and CircuitElements.
 
 #Examples
 ```jldoctest
+julia> using EISAnalysis
 julia> eval(initialize());
 julia> circuit1 = r-c;
 julia> circuit2 = circuit1-c;
@@ -92,6 +93,7 @@ Mutates the impedance parameter of CircuitElements.
 
 #Examples
 ```jldoctest
+julia> using EISAnalysis
 julia> eval(initialize());
 julia> r.R
 1.0
@@ -127,6 +129,7 @@ Mutates the exponent parameter of CPE's and Warburgs.
 
 #Examples
 ```jldoctest
+julia> using EISAnalysis
 julia> eval(initialize());
 julia> circuit = q-wo; print_circuit(circuit)
 1.0 * q ^ 0.8
@@ -155,6 +158,7 @@ Operates over Circuits and CircuitElements.
 
 # Examples
 ```jldoctest
+julia> using EISAnalysis
 julia> ω = [0.1,1,10]
 3-element Vector{Float64}:
   0.1
