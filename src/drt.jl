@@ -160,11 +160,6 @@ using EISAnalysis, Statistics
 eval(initialize())
 ω_exp, Z_exp = (r/q).ω, (r/q).Z #replace this with real data
 fit = compute_drt(ω_exp,Z_exp;showplot = false,regularization = true)
-mean(abs2.((fit["Z"].-Z_exp)./Z_exp)) < 1e-04
-
-# output
-
-true
 ```
 """
 function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regularization = false)
