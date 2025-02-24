@@ -1,21 +1,33 @@
-ws,wo = Warburg("short"), Warburg("open")
-r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()
+# const ws,wo = Warburg("short"), Warburg("open")
+# const r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()
 
+"""
+    initialize()
+
+Generates all the circuit elements for ease of use in building circuits
+"""
+function initialize()
+    eval(quote
+    ws,wo = Warburg("short"), Warburg("open")
+    r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()  
+    end)
+    print("Circuit elements r, c, q, l, wo, and ws generated")
+    return nothing
+end
+"""
+    Circuit
+
+Struct for storing information about circuits
+
+# Attributes
+- `ω`: EIS frequencies
+- `Z`: EIS Impedances
+- `elements`: List of circuit elements. Also stores paramter information.
+- `operators`: List of operators (-,/) between elements
+- `order`: Order of operations
+- `subcircuits`: List of subcircuits
+"""
 mutable struct Circuit
-    """
-    Description
-    -----------
-    Struct for storing information about circuits
-
-    Elements
-    -----------
-    ω           - EIS frequencies
-    Z           - EIS Impedances
-    elements    - List of circuit elements. Also stores paramter information.
-    operators   - List of operators (-,/) between elements
-    order       - Order of operations
-    subcircuits - List of subcircuits
-    """
     ω           ::Vector{Real}
     Z           ::Vector{ComplexF64}
     elements    ::Vector
@@ -25,10 +37,23 @@ mutable struct Circuit
 end
 
 """
-function get_params
-    Description
-    -----------
-    Gets the parameters for elements in a circuit.
+    get_params(a::Union{CircuitElement,Circuit})
+
+Gets the parameters for elements in a circuit.
+
+# Attributes
+- `a::Union{CircuitElement,Circuit}`: The circuit or circuit element
+
+# Examples
+```julia
+julia> randles_circuit = 0.23r-(r-0.025wo^80)/0.2q;
+julia> p = get_params(randles_circuit)
+4-element Vector{Any}:
+ 0.23
+ 1.0
+  (0.025, 80.0)
+  (0.2, 0.8)
+```
 """
 get_params(a::Resistor) = a.R
 get_params(a::Capacitor) = a.C
@@ -38,11 +63,29 @@ get_params(a::Warburg) = (a.A,a.B)
 get_params(a::Circuit) = [get_params(eval(element)) for element in a.elements]
 
 """
-function set_params
-    Description
-    -----------
-    Sets the parameters for elements in a circuit. Currently a bit sloppy.
-    Used in circuit_fit
+    set_params(a::Union{CircuitElement,Circuit})
+
+Sets the parameters for elements in a circuit. 
+
+Currently a bit sloppy.Used in `circuit_fit`
+
+# Attributes
+- `a::Union{CircuitElement,Circuit}`: The circuit or circuit element
+- `p`: The parameter list. Needs to carry tuples for elements with two parameters
+
+# Examples
+```julia
+julia> circuit = r-r/q;
+julia> p = [0.5,2,(0.5,0.9)]
+3-element Vector{Any}:
+ 0.5
+ 2
+  (0.5, 0.9)
+julia> updated_circuit = EISAnalysis.set_params(circuit,p); print_circuit(updated_circuit)
+0.5r
+2.0r
+0.5 * q ^ 0.9
+```
 """
 set_params(a::Resistor,p) = p*r
 set_params(a::Capacitor,p) = p*c
@@ -61,11 +104,14 @@ end
 
 
 """
-function get_symbol
-    Description
-    -----------
-    Creates the symbol (technically expressions) for a circuit element, using globally defined variables.
-    Used for generating the elements field of a circuit
+    get_symbol(a::CircuitElement)
+
+Creates the symbol (technically expressions) for a circuit element, using globally defined variables.
+    
+Used for generating the elements field of a circuit.
+
+# Attributes
+- `a::CircuitElement`: The circuit element
 """
 function get_symbol(a::Resistor)
     return :($(a.R)*r)
@@ -87,19 +133,19 @@ function get_symbol(a::Warburg)
     end
 end
 
-function get_subcircuit(subelements,suboperators,suborder)
 """
-    Description
-    -----------
-    Creates a circuit from a subcircuit.
-    Used in rebuild. Currently a bit sloppy.
+    get_subcircuit(subelements,suboperators,suborder)
 
-    Parameters
-    -----------
-    subelements     - elements of subcircuit
-    suboperators    - operators of subcircuit
-    suborder        - operation order of subcircuit
+Creates a circuit from a subcircuit.
+
+Used in `rebuild`. Currently a bit sloppy.
+
+# Attributes
+- `subelements`: elements of subcircuit
+- `suboperators`: operators of subcircuit
+- `suborder`: operation order of subcircuit
 """
+function get_subcircuit(subelements,suboperators,suborder)
     suborder = suborder[2:end]
     suboperators = suboperators[2:end]
     #sorted_index
@@ -126,17 +172,17 @@ function get_subcircuit(subelements,suboperators,suborder)
     return eval(subcircuit)
 end
 
-function rebuild(circuit)
 """
-    Description
-    -----------
-    Main function for recalculating a circuit's impedance.
-    Used after mutating a circuit through either ~ or set_params
+   rebuild(circuit::Circuit)
 
-    Parameters
-    -----------
-    circuit - Mutated circuit to be rebuilt
+Main function for recalculating a circuit's impedance.
+
+Used after mutating a circuit through either ~ or set_params
+
+# Attributes
+- `circuit`: Mutated circuit to be rebuilt
 """
+function rebuild(circuit)
     fullcircuit = undef
     operators = vcat(undef,circuit.operators)
     order = vcat(maximum(circuit.order),circuit.order)

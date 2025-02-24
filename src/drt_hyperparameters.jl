@@ -1,15 +1,14 @@
-function optimize_lambda(ω_exp,Z_exp,τ)
 """
-    Description
-    -----------
-    Main function for finding optimal λ hyperparameter for regularization.
+    optimize_lambda(ω_exp,Z_exp,τ)
 
-    Parameters
-    -----------
-    ω_exp   - Input EIS frequency
-    Z_exp   - Input EIS Impedance
-    τ       - Desired relaxation times for computing DRT: generated in compute_drt
+Generates the optimal regularization hyperparameter for `compute_drt`.
+
+# Attributes
+- `ω_exp`: Input EIS frequency
+- `Z_exp`: Input EIS Impedance
+- `τ`: Desired relaxation times for computing DRT: generated in compute_drt
 """
+function optimize_lambda(ω_exp,Z_exp,τ)
     lambda_values = vcat(logrange(1e-06,1e01,8))
     lambda_crossval = Vector(undef,length(lambda_values))
     ω = 1 ./τ
@@ -56,20 +55,20 @@ function optimize_lambda(ω_exp,Z_exp,τ)
     return lambda_values[i_min]
 end
 
-function tune_τ(ω_exp,Z_exp;ppd=ppd,tol = 1e-03)
 """
-    Description
-    -----------
-    Function for finding optimal τ range for computing DRT.
-    Currently incomplete. Would be used in compute_drt
+    tune_τ(ω_exp,Z_exp;ppd,tol)
 
-    Parameters
-    -----------
-    ω_exp   - Input EIS frequency
-    Z_exp   - Input EIS Impedance
-    ppd     - Points-per-decade in output τ range for computing DRT
-    tol     - Tolerance for finding τ bounds where DRT impedance is sufficiently small
+Generates the optimal τ range for computing DRT.
+    
+Currently incomplete. Would be used in `compute_drt`
+
+# Attributes
+- `ω_exp`: Input EIS frequency
+- `Z_exp`: Input EIS Impedance
+- `ppd`: Points-per-decade in output τ range for computing DRT
+- `tol=1e-03`: Tolerance for finding τ bounds where DRT impedance is sufficiently small
 """
+function tune_τ(ω_exp,Z_exp;ppd,tol = 1e-03)
     # fit = compute_drt(ω_exp,Z_exp)
     τ_init = logrange(0.1/maximum(ω_exp),10/minimum(ω_exp),floor(Int,log10(100*maximum(ω_exp)/minimum(ω_exp)))*ppd)
     ω_init = 1 ./τ_init

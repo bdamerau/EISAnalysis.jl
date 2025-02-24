@@ -1,12 +1,18 @@
 """
-    Description
-    -----------
-    Creates a Nyquist plot
+    plot_Nyquist(a;label)
 
-    Parameters
-    -----------
-    a::Circuit  - The circuits to add to the Nyquist plot
-    label       - kwarg for plot
+Creates a Nyquist plot
+
+# Arguments
+- `a::Circuit`: The circuits to add to the Nyquist plot
+- `label`: kwarg label for plot
+
+# Examples
+```julia
+julia> circuit1 = r-r/c;
+julia> circuit2 = r-r/q;
+julia> plot_Nyquist(circuit1,circuit2;label= ["R-C Circuit","R-CPE Circuit"]);
+```
 """
 function plot_Nyquist(a::Circuit...;label::Vector{String} = fill("",length(a)))
     if length(label)!=length(a)
@@ -26,18 +32,25 @@ function plot_Nyquist(a::Circuit;label::String = "")
     plot!(plt,aspect_ratio=:equal,yflip=true,ylabel = "-Im Z / Ω", xlabel = "Re Z / Ω",legend = :topleft)
     return plt
 end
-function plot_Nyquist!(plt,a::Circuit...;label::Vector{String} = fill("",length(a)))
-"""
-    Description
-    -----------
-    Adds circuits to pre-existing Nyquist plot
 
-    Parameters
-    -----------
-    plt::Plots.plot - The input Nyquist plot to manipulate
-    a::Circuit      - The circuits to add to the Nyquist plot
-    label           - kwarg for plot
 """
+    plot_Nyquist!(plt,a;label)
+
+Adds circuits to pre-existing Nyquist plot
+
+# Arguments
+- `plt`: The input Nyquist plot to manipulate
+- `a::Circuit`: The circuits to add to the Nyquist plot
+- `label`: kwarg label for plot
+
+# Examples
+```julia
+julia> circuit1 = r-r/c;
+julia> circuit2 = r-r/q;
+julia> plot_Nyquist(circuit1,circuit2;label= ["R-C Circuit","R-CPE Circuit"]);
+```
+"""
+function plot_Nyquist!(plt,a::Circuit...;label::Vector{String} = fill("",length(a)))
     if length(label)!=length(a)
         println("Warning: label must be the same length as data arguments")
         label = fill("",length(a))
@@ -57,20 +70,19 @@ end
 
 function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
 """
-    Description
-    -----------
-    Creats a combined plot of 
-        1. A fit of the DRT results to input EIS data
-        2. The DRT plotted with peaks and peakwidths
-        3. An expanded Nyquist plot of DRT data to aid in DRT interpretation
+Called in `compute_drt`
 
-    Parameters
-    -----------
-    Z_exp::Complex      - The input impedance data being fitted
-    Z_fit::Complex      - The DRT fit result, matching the frequencies of Z_exp
-    Z_expanded::Complex - The expanded DRT fit using the full range of τ
-    τ::Vector           - The range of timescales over which the DRT is calculated
-    γ::Vector           - DRT Results
+Creates a combined plot of 
+1. A fit of the DRT results to input EIS data
+2. The DRT plotted with peaks and peakwidths
+3. An expanded Nyquist plot of DRT data to aid in DRT interpretation
+
+# Arguments
+- `Z_exp`: The input impedance data being fitted
+- `Z_fit`: The DRT fit result, matching the frequencies of Z_exp
+- `Z_expanded`: The expanded DRT fit using the full range of τ
+- `τ`: The range of timescales over which the DRT is calculated
+- `γ`: DRT Results
 
 """
     fitplt = scatter(Z_exp,label = "data")
@@ -98,16 +110,25 @@ function plot_drt(Z_exp,Z_fit,Z_expanded,τ,γ)
     return fullplt
 end
 
-function print_circuit(circuit)
 """
-    Description
-    -----------
-    Prints the elements of a circuit along with its parameters
+    print_circuit(circuit)
+    
+Prints the elements of a circuit along with its parameters
 
-    Parameters
-    -----------
-    circuit::Circuit    - The circuit being printed
+# Arguments
+- `circuit::Circuit`: The circuit being printed
+
+# Examples
+```julia
+julia> randles_circuit = 0.23r-(r-0.025wo^80)/0.2q;
+julia> print_circuit(randles_circuit)
+0.23r
+1.0r
+0.025 * wo ^ 80.0
+0.2 * q ^ 0.8
+```
 """
+function print_circuit(circuit)
     for element in circuit.elements
         println(element)
     end

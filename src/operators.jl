@@ -1,36 +1,28 @@
-"""
-Overloaded Operators: -, /, *, ^, and ~
-
-Function /
-    Description
-    -----------
-    Holds the inputs in parallel and generates a Circuit.
-    Operates over Circuits and CircuitElements
-
-Function -
-    Description
-    -----------
-    Holds the inputs in series and generates a Circuit.
-    Operates over Circuits and CircuitElements
-
-Function *
-    Description
-    -----------
-    Mutates the impedance parameter of CircuitElements
-
-Function ^
-    Description
-    -----------
-    Mutates the exponent parameter of CPE's and Warburgs
-
-Function ~
-    Description
-    -----------
-    Maps the frequencies over which impedance is calculated to the desired frequency.
-    Operates over Circuits and CircuitElements.
-"""
-
 import Base.(-)
+import Base.(*)
+import Base.(^)
+import Base.(/)
+import Base.(~)
+
+"""
+    -(a::Union{Circuit,CircuitElement},b::Union{Circuit,CircuitElement})
+
+Holds the inputs in series and generates a Circuit.
+
+Operates over Circuits and CircuitElements.
+
+# Arguments
+- `a::Union{Circuit,CircuitElement}`: circuit or circuit element to hold in series with `b`
+- `b::Union{Circuit,CircuitElement}`: circuit or circuit element to hold in series with `a`
+
+#Examples
+```julia
+julia> circuit1 = r-c;
+julia> circuit2 = circuit1-c;
+julia> circuit2.Z == (r-c-c).Z == (r-0.5c).Z
+true
+```
+"""
 function -(a::CircuitElement,b::Circuit)
     return Circuit(a.ω, a.Z+b.Z, vcat(get_symbol(a),b.elements),vcat(-,b.operators),
     vcat(maximum(b.order)+1,b.order),vcat(maximum(b.subcircuits),b.subcircuits))
@@ -47,7 +39,29 @@ function -(a::Circuit,b::Circuit)
     vcat(a.order,maximum(a.order)+maximum(b.order)+1,b.order .+ maximum(a.order)),vcat(a.subcircuits,b.subcircuits .+ maximum(a.subcircuits)))
 end
 
-import Base.(/)
+"""
+    Base./(a::Union{Circuit,CircuitElement},b::Union{Circuit,CircuitElement})
+
+Holds the inputs in parallel and generates a Circuit.
+
+Operates over Circuits and CircuitElements.
+
+# Arguments
+- `a::Union{Circuit,CircuitElement}`: circuit or circuit element to hold in parallel with `b`
+- `b::Union{Circuit,CircuitElement}`: circuit or circuit element to hold in parallel with `a`
+
+#Examples
+```julia
+julia> circuit1 = r/c;
+julia> circuit1.elements
+2-element Vector{Expr}:
+ :(1.0r)
+ :(1.0c)
+julia> circuit2 = circuit1/c;
+julia> circuit2.Z == ((r/c)/c).Z
+true
+```
+"""
 function /(a::CircuitElement,b::Circuit)
     return Circuit(a.ω, a.Z.*b.Z ./(a.Z+b.Z), vcat(get_symbol(a),b.elements),vcat(/,b.operators),
     vcat(maximum(b.order)+1,b.order),vcat(maximum(b.subcircuits),b.subcircuits))
@@ -65,33 +79,87 @@ function /(a::Circuit,b::Circuit)
 end
 
 
-import Base.*
-function *(a::Real, r::Resistor)
-    return Resistor(r.ω,a*r.R)
+"""
+    Base.*(a::Real,b::CircuitElement)
+
+Mutates the impedance parameter of CircuitElements.
+
+# Arguments
+- `a::Real`: Impedance parameter value
+- `b::CircuiElement`: Circuit element 
+
+#Examples
+```julia
+julia> r.R
+1.0
+julia> twor = 2r;
+julia> twor.R
+2.0
+```
+"""
+function *(a::Real, b::Resistor)
+    return Resistor(b.ω,a*b.R)
 end
-function *(a::Real, c::Capacitor)
-    return Capacitor(c.ω,a*c.C)
+function *(a::Real, b::Capacitor)
+    return Capacitor(b.ω,a*b.C)
 end
-function *(a::Real, q::CPE)
-    return CPE(q.ω,a*q.Q,q.n)
+function *(a::Real, b::CPE)
+    return CPE(b.ω,a*b.Q,b.n)
 end
-function *(a::Real, l::Inductor)
-    return Inductor(l.ω,a*l.L)
+function *(a::Real, b::Inductor)
+    return Inductor(b.ω,a*b.L)
 end
-function *(a::Real, w::Warburg)
-    return Warburg(w.ω,w.type,a*w.A,w.B)
+function *(a::Real, b::Warburg)
+    return Warburg(b.ω,b.type,a*b.A,b.B)
 end
 
-import Base.(^)
-function ^(q::CPE,a::Real)
-    return CPE(q.ω,q.Q,a)
+"""
+    Base.^(a::CircuitElement,b::Real)
+
+Mutates the exponent parameter of CPE's and Warburgs.
+
+# Arguments
+- `a::CircuiElement`: circuit or circuit element to hold in series with `a`
+- `b::Real`: Exponential parameter value
+
+#Examples
+```julia
+julia> circuit = q-wo; print_circuit(circuit)
+1.0 * q ^ 0.8
+1.0 * wo ^ 1.0
+julia> circuit2 = q^0.6-wo^5; print_circuit(circuit2)
+1.0 * q ^ 0.6
+1.0 * wo ^ 5.0
+```
+"""
+function ^(b::CPE,a::Real)
+    return CPE(b.ω,b.Q,a)
 end
-function ^(w::Warburg,a::Real)
-    return w = Warburg(w.ω,w.type,w.A,a)
+function ^(b::Warburg,a::Real)
+    return Warburg(b.ω,b.type,b.A,a)
 end
 
-##mapping circuit element to desired ω
-import Base.(~)
+"""
+    Base.~(a::Union{CircuitElement,Circuit},ω::Vector{Float64})
+Maps the frequencies over which impedance is calculated to the desired frequency.
+
+Operates over Circuits and CircuitElements.
+
+# Arguments
+-`a`: Circuit element or circuit
+-`ω`: Frequencies to map to
+
+# Examples
+```julia
+julia> ω = [0.1,1,10]
+3-element Vector{Float64}:
+  0.1
+  1.0
+ 10.0
+julia> circuit = r/c ~ω; println(circuit.ω,circuit.Z)
+Real[0.1, 1.0, 10.0]ComplexF64[0.9900990099009901 - 0.09900990099009901im, 0.5 - 0.5im, 0.009900990099009903 - 0.09900990099009901im]
+```
+"""
 function ~(a::Resistor,ω::Vector{Float64})
     return Resistor(ω,a.R)
 end
