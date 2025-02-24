@@ -1,3 +1,6 @@
+ws,wo = EISAnalysis.Warburg("short"), EISAnalysis.Warburg("open")
+r,c,q,l = EISAnalysis.Resistor(),EISAnalysis.Capacitor(),EISAnalysis.CPE(),EISAnalysis.Inductor() 
+
 """
     initialize()
 
@@ -14,10 +17,14 @@ From here you can quickly build circuits and adjust the parameters directly
 using the overloaded * and ^ operators as desired
 
 # Examples
-```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> silly_circuit = 0.25r/2.5l-(r-9wo)/q^0.64-(16r-ws^144)/12.1c;
+```jldoctest
+using EISAnalysis
+eval(initialize())
+print(r.R)
+
+# output
+
+1.0
 ```
 """
 function initialize()
@@ -57,11 +64,14 @@ Gets the parameters for elements in a circuit.
 - `a::Union{CircuitElement,Circuit}`: The circuit or circuit element
 
 # Examples
-```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> randles_circuit = 0.23r-(r-0.025wo^80)/0.2q;
-julia> p = get_params(randles_circuit)
+```jldoctest
+using EISAnalysis
+eval(initialize())
+randles_circuit = 0.23r-(r-0.025wo^80)/0.2q
+get_params(randles_circuit)
+
+# output
+
 4-element Vector{Any}:
  0.23
  1.0
@@ -88,16 +98,16 @@ Currently a bit sloppy.Used in `circuit_fit`
 - `p`: The parameter list. Needs to carry tuples for elements with two parameters
 
 # Examples
-```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> circuit = r-r/q;
-julia> p = [0.5,2,(0.5,0.9)]
-3-element Vector{Any}:
- 0.5
- 2
-  (0.5, 0.9)
-julia> updated_circuit = EISAnalysis.set_params(circuit,p); print_circuit(updated_circuit)
+```jldoctest
+using EISAnalysis
+eval(initialize());
+circuit = r-r/q;
+p = [0.5,2,(0.5,0.9)]
+updated_circuit = EISAnalysis.set_params(circuit,p)
+print_circuit(updated_circuit)
+
+# output
+
 0.5r
 2.0r
 0.5 * q ^ 0.9

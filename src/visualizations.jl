@@ -124,13 +124,15 @@ Prints the elements of a circuit along with its parameters
 
 # Examples
 ```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> randles_circuit = 0.23r-(r-0.025wo^80)/0.2q;
-julia> print_circuit(randles_circuit)
+using EISAnalysis
+eval(initialize())
+randles_circuit = 0.23r-r/0.2q
+print_circuit(randles_circuit)
+
+# output 
+
 0.23r
 1.0r
-0.025 * wo ^ 80.0
 0.2 * q ^ 0.8
 ```
 """

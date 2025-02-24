@@ -156,19 +156,15 @@ Main function for computing the DRT from input EIS data.
 
 # Examples
 ```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> ω_exp, Z_exp = (r/q).ω, (r/q).Z; #replace this with actual data;
-julia> fit = compute_drt(ω_exp,Z_exp;showplot = false,regularization = true)
-Regularization
---------------
-λ = 1.0e-6
-rerror = 1.0372641378584664e-5
-Dict{String, Any} with 4 entries:
-  "Z"   => ComplexF64[3.05534e-5-9.31279e-5im, 3.93483e-5-0.000122541im, 5.13691e-5-0.000160629im, 6.74522e-5-0.000209759im, 8.85396e-5-0.000273092im, 0.000115777-0.000354963im, 0.00015081-0.000461241im,…
-  "τ"   => LogRange{Float64}(1.0e-6, 10000.0, 70)
-  "R0"  => 5.69325e-6
-  "drt" => [6.50295e-6, 6.38765e-6, 6.18446e-6, 5.82042e-6, 5.16761e-6, 4.02587e-6, 2.15302e-6, 2.46489e-5, 1.9091e-5, 3.48558e-5  …  0.00138043, 0.00116424, 0.0, 0.0, 0.00282261, 0.0, 0.0, 0.0, 0.0, 0.0]
+using EISAnalysis, Statistics
+eval(initialize())
+ω_exp, Z_exp = (r/q).ω, (r/q).Z #replace this with real data
+fit = compute_drt(ω_exp,Z_exp;showplot = false,regularization = true)
+mean(abs2.((fit["Z"].-Z_exp)./Z_exp)) < 1e-04
+
+# output
+
+true
 ```
 """
 function compute_drt(ω_exp,Z_exp;ppd = 7,showplot = true,rtol = 1e-03,regularization = false)

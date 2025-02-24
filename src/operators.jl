@@ -16,12 +16,15 @@ Operates over Circuits and CircuitElements.
 - `b::Union{Circuit,CircuitElement}`: circuit or circuit element to hold in series with `a`
 
 #Examples
-```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> circuit1 = r-c;
-julia> circuit2 = circuit1-c;
-julia> circuit2.Z == (r-c-c).Z == (r-0.5c).Z
+```jldoctest
+using EISAnalysis
+eval(initialize())
+circuit1 = r-c
+circuit2 = circuit1-c
+circuit2.Z == (r-c-c).Z == (r-0.5c).Z
+
+# output
+
 true
 ```
 """
@@ -53,16 +56,15 @@ Operates over Circuits and CircuitElements.
 - `b::Union{Circuit,CircuitElement}`: circuit or circuit element to hold in parallel with `a`
 
 #Examples
-```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> circuit1 = r/c;
-julia> circuit1.elements
-2-element Vector{Expr}:
- :(1.0r)
- :(1.0c)
-julia> circuit2 = circuit1/c;
-julia> circuit2.Z == ((r/c)/c).Z
+```jldoctest
+using EISAnalysis
+eval(initialize())
+circuit1 = r/c
+circuit2 = circuit1/c;
+circuit2.Z == ((r/c)/c).Z
+
+# output
+
 true
 ```
 """
@@ -93,14 +95,15 @@ Mutates the impedance parameter of CircuitElements.
 - `b::CircuiElement`: Circuit element 
 
 #Examples
-```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> r.R
-1.0
-julia> twor = 2r;
-julia> twor.R
-2.0
+```jldoctest
+using EISAnalysis
+eval(initialize())
+twor = 2r
+twor.R == 2*r.R
+
+# output
+
+true
 ```
 """
 function *(a::Real, b::Resistor)
@@ -129,13 +132,18 @@ Mutates the exponent parameter of CPE's and Warburgs.
 - `b::Real`: Exponential parameter value
 
 #Examples
-```julia
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> circuit = q-wo; print_circuit(circuit)
+```jldoctest
+using EISAnalysis
+eval(initialize())
+circuit = q-wo 
+print_circuit(circuit)
+circuit2 = q^0.6-wo^5;
+print_circuit(circuit2)
+
+# output
+
 1.0 * q ^ 0.8
 1.0 * wo ^ 1.0
-julia> circuit2 = q^0.6-wo^5; print_circuit(circuit2)
 1.0 * q ^ 0.6
 1.0 * wo ^ 5.0
 ```
@@ -158,15 +166,14 @@ Operates over Circuits and CircuitElements.
 -`ω`: Frequencies to map to
 
 # Examples
-```julia
-julia> ω = [0.1,1,10]
-3-element Vector{Float64}:
-  0.1
-  1.0
- 10.0
-julia> using EISAnalysis
-julia> eval(initialize());
-julia> circuit = r/c ~ω; println(circuit.ω,circuit.Z)
+```jldoctest
+ω = [0.1,1,10]
+using EISAnalysis
+eval(initialize());
+circuit = r/c ~ω; println(circuit.ω,circuit.Z)
+
+# output
+
 Real[0.1, 1.0, 10.0]ComplexF64[0.9900990099009901 - 0.09900990099009901im, 0.5 - 0.5im, 0.009900990099009903 - 0.09900990099009901im]
 ```
 """
