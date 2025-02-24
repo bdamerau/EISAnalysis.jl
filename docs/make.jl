@@ -5,7 +5,7 @@ push!(LOAD_PATH,"../src/")
 makedocs(sitename="EISAnalysis.jl Documentation",
          pages = [
             "Index" => "index.md",
-            # "An other page" => "anotherPage.md",
+            "An other page" => "anotherPage.md",
          ],
          format = Documenter.HTML(prettyurls = false)
 )

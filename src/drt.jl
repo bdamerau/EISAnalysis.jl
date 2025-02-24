@@ -155,7 +155,7 @@ Main function for computing the DRT from input EIS data.
 - `regularization=false`: Whether or no to employ the regularization method
 
 # Examples
-```jldoctest
+```julia
 julia> using EISAnalysis
 julia> eval(initialize());
 julia> ω_exp, Z_exp = (r/q).ω, (r/q).Z; #replace this with actual data;
