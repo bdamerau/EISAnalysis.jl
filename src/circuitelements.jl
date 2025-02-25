@@ -21,7 +21,8 @@ mutable struct Resistor <: CircuitElement
     Z       ::Vector{ComplexF64}
 end
 Resistor(ω=ω_default,R=1.0) = Resistor(R, ω, R*ones(length(ω)))
-const r = Resistor()
+
+global const r = Resistor()
 
 """
     Capacitor(C,ω,Z)
