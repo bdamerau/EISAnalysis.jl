@@ -1,6 +1,6 @@
 const ws,wo = Warburg("short"), Warburg("open")
 const r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()  
-
+println(r)
 """
     initialize()
 
