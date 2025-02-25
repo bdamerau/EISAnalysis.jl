@@ -1,6 +1,8 @@
 const ω_default = collect(logrange(1e05,1e-03,7*Int(log10(1e05/1e-03))+1))
-
-
+##some testing
+global const r = Resistor()
+global const dummy = Resistor()
+global const dummy2 = π/2
 
 
 abstract type CircuitElement end
@@ -22,7 +24,7 @@ mutable struct Resistor <: CircuitElement
 end
 Resistor(ω=ω_default,R=1.0) = Resistor(R, ω, R*ones(length(ω)))
 
-global const r = Resistor()
+
 
 """
     Capacitor(C,ω,Z)
