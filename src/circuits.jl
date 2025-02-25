@@ -110,12 +110,11 @@ print_circuit(updated_circuit)
 0.5 * q ^ 0.9
 ```
 """
-set_params(a::Resistor,p) = p*Resistor()
-set_params(a::Capacitor,p) = p*Capacitor()
-set_params(a::Inductor,p) = p*Inductor()
-set_params(a::CPE) = p[1]*CPE()^p[2]
-# set_params(a::Warburg,p) = (a.type=="short") ? p[1]*ws^p[2] : p[1]*wo^p[2]
-set_params(a::Warburg,p) = p[1]*Warburg(a.type)^p[2]
+set_params(a::Resistor,p) = Resistor(a.ω,p)
+set_params(a::Capacitor,p) = Capacitor(a.ω,p)
+set_params(a::Inductor,p) = Inductor(a.ω,p)
+set_params(a::CPE,p) = CPE(a.ω,p[1],p[2])
+set_params(a::Warburg,p) = Warburg(a.ω,a.type,p[1],p[2])
 function set_params(a::Circuit,p) 
     b = Circuit(a.ω,a.Z,Vector(undef,length(a.elements)),a.operators,a.order,a.subcircuits)
     for i in eachindex(a.elements)
@@ -199,8 +198,7 @@ function get_subcircuit(subelements,suboperators,suborder)
             subcircuit = :( $subcircuit / $(subelements[i+1]) )
         end
     end
-    eval(initialize())
-    return eval(subcircuit)
+    return subcircuit
 end
 
 """
@@ -214,6 +212,7 @@ Used after mutating a circuit through either ~ or set_params
 - `circuit`: Mutated circuit to be rebuilt
 """
 function rebuild(circuit)
+    eval(initialize())
     fullcircuit = undef
     operators = vcat(undef,circuit.operators)
     order = vcat(maximum(circuit.order),circuit.order)
@@ -222,7 +221,7 @@ function rebuild(circuit)
         subelements = circuit.elements[sub_i]
         suboperators = operators[sub_i]
         suborder = order[sub_i]
-        subcircuit = get_subcircuit(subelements,suboperators,suborder)
+        subcircuit = eval(get_subcircuit(subelements,suboperators,suborder))
         if i ==1
             fullcircuit = subcircuit
         else
