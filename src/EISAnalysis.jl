@@ -10,10 +10,10 @@ using Roots,Peaks
 using Plots
 
 include("circuitelements.jl")
-include("drt_hyperparameters.jl")
 include("circuits.jl")
 include("operators.jl")
-include("visualizations.jl")
 include("circuit_fitting.jl")
 include("drt.jl")
+include("drt_hyperparameters.jl")
+include("visualizations.jl")
 end # module EISAnalysis
