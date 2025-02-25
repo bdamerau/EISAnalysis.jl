@@ -1,6 +1,5 @@
-const ws = 1Warburg("short")
-const wo =  1.0*Warburg("open")
-const r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()  
+global ws,wo = Warburg("short"), Warburg("open")
+global r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()  
 
 """
     initialize()
@@ -114,11 +113,11 @@ print_circuit(updated_circuit)
 0.5 * q ^ 0.9
 ```
 """
-set_params(a::Resistor,p) = p*r
-set_params(a::Capacitor,p) = p*c
-set_params(a::Inductor,p) = p*l
-set_params(a::CPE,p) = p[1]*q^p[2]
-set_params(a::Warburg,p) = (a.type=="short") ? p[1]*ws^p[2] : p[1]*wo^p[2]
+set_params(a::Resistor,p; r=r) = p*r
+set_params(a::Capacitor,p; c=c) = p*c
+set_params(a::Inductor,p; l=l) = p*l
+set_params(a::CPE,p; q=q) = p[1]*q^p[2]
+set_params(a::Warburg,p; ws=ws, wo=wo) = (a.type=="short") ? p[1]*ws^p[2] : p[1]*wo^p[2]
 function set_params(a::Circuit,p) 
     b = Circuit(a.ω,a.Z,Vector(undef,length(a.elements)),a.operators,a.order,a.subcircuits)
     for i in eachindex(a.elements)
@@ -140,19 +139,19 @@ Used for generating the elements field of a circuit.
 # Attributes
 - `a::CircuitElement`: The circuit element
 """
-function get_symbol(a::Resistor)
+function get_symbol(a::Resistor;r = r)
     return :($(a.R)*r)
 end
-function get_symbol(a::Capacitor)
+function get_symbol(a::Capacitor;c = c)
     return :($(a.C)*c)
 end
-function get_symbol(a::Inductor)
+function get_symbol(a::Inductor;l = l)
     return :($(a.L)*l)
 end
-function get_symbol(a::CPE)
+function get_symbol(a::CPE;q = q)
     return :($(a.Q)*q^$(a.n))
 end
-function get_symbol(a::Warburg)
+function get_symbol(a::Warburg;ws = ws,wo =wo)
     if a.type =="short"
         return :($(a.A)*ws^$(a.B))
     elseif a.type =="open"
