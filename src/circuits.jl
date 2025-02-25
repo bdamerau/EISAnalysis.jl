@@ -1,9 +1,3 @@
-const r = Resistor()
-const c = Capacitor()
-const q = CPE()
-const l = Inductor()
-const ws = Warburg("short")
-const wo = Warburg("open")
 """
     initialize()
 
@@ -116,11 +110,11 @@ print_circuit(updated_circuit)
 0.5 * q ^ 0.9
 ```
 """
-set_params(a::Resistor,p; r::Resistor=r) = p*r
-set_params(a::Capacitor,p; c::Capacitor=c) = p*c
-set_params(a::Inductor,p; l::Inductor=l) = p*l
-set_params(a::CPE,p; q::CPE=q) = p[1]*q^p[2]
-set_params(a::Warburg,p; ws::Warburg=ws, wo::Warburg=wo) = (a.type=="short") ? p[1]*ws^p[2] : p[1]*wo^p[2]
+set_params(a::Resistor,p; r=Resistor()) = p*r
+set_params(a::Capacitor,p; c=Capacitor()) = p*c
+set_params(a::Inductor,p; l=Inductor()) = p*l
+set_params(a::CPE,p; q=CPE()) = p[1]*q^p[2]
+set_params(a::Warburg,p; ws=Warburg("short"), wo=Warburg("open")) = (a.type=="short") ? p[1]*ws^p[2] : p[1]*wo^p[2]
 function set_params(a::Circuit,p) 
     b = Circuit(a.ω,a.Z,Vector(undef,length(a.elements)),a.operators,a.order,a.subcircuits)
     for i in eachindex(a.elements)
@@ -142,19 +136,19 @@ Used for generating the elements field of a circuit.
 # Attributes
 - `a::CircuitElement`: The circuit element
 """
-function get_symbol(a::Resistor;r::Resistor = r)
+function get_symbol(a::Resistor;r = Resistor())
     return :($(a.R)*r)
 end
-function get_symbol(a::Capacitor;c::Capacitor = c)
+function get_symbol(a::Capacitor;c=Capacitor())
     return :($(a.C)*c)
 end
-function get_symbol(a::Inductor;l::Inductor = l)
+function get_symbol(a::Inductor;l=Inductor())
     return :($(a.L)*l)
 end
-function get_symbol(a::CPE;q::CPE = q)
+function get_symbol(a::CPE;q=CPE())
     return :($(a.Q)*q^$(a.n))
 end
-function get_symbol(a::Warburg;ws::Warburg = ws,wo::Warburg =wo)
+function get_symbol(a::Warburg;ws=Warburg("short"), wo=Warburg("open"))
     if a.type =="short"
         return :($(a.A)*ws^$(a.B))
     elseif a.type =="open"

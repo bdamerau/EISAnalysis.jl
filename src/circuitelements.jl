@@ -1,4 +1,10 @@
 const ω_default = collect(logrange(1e05,1e-03,7*Int(log10(1e05/1e-03))+1))
+const r = Resistor()
+const c = Capacitor()
+const q = CPE()
+const l = Inductor()
+const ws = Warburg("short")
+const wo = Warburg("open")
 
 abstract type CircuitElement end
 
