@@ -1,7 +1,4 @@
 const ω_default = collect(logrange(1e05,1e-03,7*Int(log10(1e05/1e-03))+1))
-##some testing
-global const dummy = Resistor()
-global const dummy2 = π/2
 
 
 abstract type CircuitElement end
@@ -22,7 +19,6 @@ mutable struct Resistor <: CircuitElement
     Z       ::Vector{ComplexF64}
 end
 Resistor(ω=ω_default,R=1.0) = Resistor(R, ω, R*ones(length(ω)))
-global const r = Resistor()
 
 
 """
@@ -41,7 +37,6 @@ mutable struct Capacitor <: CircuitElement
     Z       ::Vector{ComplexF64}
 end
 Capacitor(ω=ω_default,C=1.0) = Capacitor(C, ω, -im./(C*ω))
-const c = Capacitor()
 """
     Inductor(L,ω,Z)
 
@@ -58,7 +53,6 @@ mutable struct Inductor <: CircuitElement
     Z       ::Vector{ComplexF64}
 end
 Inductor(ω=ω_default,L=1.0) = Inductor(L,ω,im*L*ω)
-const l = Inductor()
 """
     CPE(Q,n,ω,Z)
 
@@ -77,7 +71,6 @@ mutable struct CPE <: CircuitElement
     Z       ::Vector{ComplexF64}
 end
 CPE(ω=ω_default,Q=1.0,n=0.8) = CPE(Q,n,ω,(im*Q*ω).^(-n))
-const q = CPE()
 """
     Warburg(type,A,B,ω,Z)
 
@@ -110,5 +103,3 @@ Warburg(ω=ω_default,type="short",A=1.0,B=1.0) = begin
     end
 end
 Warburg(type::String) = Warburg(ω_default,type)
-const ws = Warburg("short")
-const wo = Warburg("open")
