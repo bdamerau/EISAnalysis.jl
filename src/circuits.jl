@@ -17,7 +17,7 @@ From here you can quickly build circuits and adjust the parameters directly
 using the overloaded * and ^ operators as desired
 
 # Examples
-```jldoctest
+```julia
 using EISAnalysis
 eval(initialize())
 print(r.R)
@@ -64,7 +64,7 @@ Gets the parameters for elements in a circuit.
 - `a::Union{CircuitElement,Circuit}`: The circuit or circuit element
 
 # Examples
-```jldoctest
+```julia
 using EISAnalysis
 eval(initialize())
 randles_circuit = 0.23r-(r-0.025wo^80)/0.2q
@@ -98,7 +98,7 @@ Currently a bit sloppy.Used in `circuit_fit`
 - `p`: The parameter list. Needs to carry tuples for elements with two parameters
 
 # Examples
-```jldoctest
+```julia
 using EISAnalysis
 eval(initialize());
 circuit = r-r/q;

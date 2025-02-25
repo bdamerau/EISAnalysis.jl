@@ -16,7 +16,7 @@ Operates over Circuits and CircuitElements.
 - `b::Union{Circuit,CircuitElement}`: circuit or circuit element to hold in series with `a`
 
 #Examples
-```jldoctest
+```julia
 using EISAnalysis
 eval(initialize())
 circuit1 = r-c
@@ -56,7 +56,7 @@ Operates over Circuits and CircuitElements.
 - `b::Union{Circuit,CircuitElement}`: circuit or circuit element to hold in parallel with `a`
 
 #Examples
-```jldoctest
+```julia
 using EISAnalysis
 eval(initialize())
 circuit1 = r/c
@@ -95,7 +95,7 @@ Mutates the impedance parameter of CircuitElements.
 - `b::CircuiElement`: Circuit element 
 
 #Examples
-```jldoctest
+```julia
 using EISAnalysis
 eval(initialize())
 twor = 2r
@@ -132,7 +132,7 @@ Mutates the exponent parameter of CPE's and Warburgs.
 - `b::Real`: Exponential parameter value
 
 #Examples
-```jldoctest
+```julia
 using EISAnalysis
 eval(initialize())
 circuit = q-wo 
@@ -166,7 +166,7 @@ Operates over Circuits and CircuitElements.
 -`ω`: Frequencies to map to
 
 # Examples
-```jldoctest
+```julia
 ω = [0.1,1,10]
 using EISAnalysis
 eval(initialize());
