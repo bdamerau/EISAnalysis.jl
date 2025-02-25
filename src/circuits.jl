@@ -1,5 +1,5 @@
-const ws = Warburg("short")
-const wo =  Warburg("open")
+const ws = 1Warburg("short")
+const wo =  1.0*Warburg("open")
 const r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()  
 
 """
