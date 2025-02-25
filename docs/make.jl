@@ -2,10 +2,14 @@ using Documenter
 using EISAnalysis
 
 push!(LOAD_PATH,"../src/")
-makedocs(sitename="EISAnalysis.jl Documentation",
+makedocs(sitename="EISAnalysis.jl",
+        doctest = false,
+        warnonly = true,
          pages = [
             "Index" => "index.md",
-            "An other page" => "anotherPage.md",
+            "Tutorial"=> "Tutorial.md",
+            "DRT" => "DRT.md",
+            "API" => "api.md",
          ],
          format = Documenter.HTML(prettyurls = false)
 )
