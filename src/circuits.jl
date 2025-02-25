@@ -1,3 +1,6 @@
+global wo,ws = Warburg("open"),Warburg("short")
+global r,c,l,q = Resistor(),Capacitor(),Inductor(),CPE()
+
 """
     initialize()
 
