@@ -1,5 +1,7 @@
-global wo,ws = Warburg("open"),Warburg("short")
-global r,c,l,q = Resistor(),Capacitor(),Inductor(),CPE()
+#Using global variable for evaluating expressions
+#This is only used in get_params(::Circuit) and rebuild(::Circuit)
+global const wo,ws = Warburg("open"),Warburg("short")
+global const r,c,l,q = Resistor(),Capacitor(),Inductor(),CPE()
 
 """
     initialize()
@@ -215,7 +217,7 @@ Used after mutating a circuit through either ~ or set_params
 - `circuit`: Mutated circuit to be rebuilt
 """
 function rebuild(circuit)
-    eval(initialize())
+    # eval(initialize())
     fullcircuit = undef
     operators = vcat(undef,circuit.operators)
     order = vcat(maximum(circuit.order),circuit.order)
