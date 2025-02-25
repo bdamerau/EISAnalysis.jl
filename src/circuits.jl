@@ -1,5 +1,5 @@
-ws,wo = EISAnalysis.Warburg("short"), EISAnalysis.Warburg("open")
-r,c,q,l = EISAnalysis.Resistor(),EISAnalysis.Capacitor(),EISAnalysis.CPE(),EISAnalysis.Inductor() 
+const ws,wo = Warburg("short"), Warburg("open")
+const r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor() 
 
 """
     initialize()
@@ -47,7 +47,7 @@ Struct for storing information about circuits
 - `subcircuits`: List of subcircuits
 """
 mutable struct Circuit
-    ω           ::Vector{Real}
+    ω           ::Vector{Float64}
     Z           ::Vector{ComplexF64}
     elements    ::Vector
     operators   ::Vector
