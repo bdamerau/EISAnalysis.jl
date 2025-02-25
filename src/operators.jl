@@ -57,15 +57,26 @@ Operates over Circuits and CircuitElements.
 
 #Examples
 ```julia
-using EISAnalysis
 eval(initialize())
-circuit1 = r/c
-circuit2 = circuit1/c;
-circuit2.Z == ((r/c)/c).Z
+r_parallel = r/r
+r_parallel.Z ≈ 0.5r.Z
 
-# output
+# output 
 
 true
+```
+```julia
+eval(initialize())
+c_parallel = c/c
+c_parallel.Z ≈ 2c.Z
+
+# output 
+
+true
+```
+```julia
+eval(initialize())
+randles_circuit = r-(r-wo)/q #notation for a Randles circuit
 ```
 """
 function /(a::CircuitElement,b::Circuit)
@@ -133,11 +144,10 @@ Mutates the exponent parameter of CPE's and Warburgs.
 
 #Examples
 ```julia
-using EISAnalysis
 eval(initialize())
 circuit = q-wo 
-print_circuit(circuit)
 circuit2 = q^0.6-wo^5;
+print_circuit(circuit)
 print_circuit(circuit2)
 
 # output
@@ -168,9 +178,9 @@ Operates over Circuits and CircuitElements.
 # Examples
 ```julia
 ω = [0.1,1,10]
-using EISAnalysis
-eval(initialize());
-circuit = r/c ~ω; println(circuit.ω,circuit.Z)
+eval(initialize())
+circuit = r/c ~ω 
+println(circuit.ω,circuit.Z)
 
 # output
 

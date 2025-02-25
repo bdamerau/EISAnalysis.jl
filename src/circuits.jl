@@ -1,9 +1,5 @@
-const r = Resistor()
-const c = Capacitor()
-const q = CPE()
-const l = Inductor()
-const ws = Warburg("short")
-const wo = Warburg("open")
+const ws,wo = Warburg("short"), Warburg("open")
+const r,c,q,l = Resistor(),Capacitor(),CPE(),Inductor()  
 
 """
     initialize()
